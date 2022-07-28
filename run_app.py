@@ -23,11 +23,30 @@ from PIL import Image
 import timeit
 from utils.poisson_image_editing import poisson_edit
 from utils.data_utils import *
-from utils.model_utils import *
+#from utils.model_utils import *
 import numpy as np
 import argparse
 import copy
 from io import BytesIO
+#from models.EditGAN.EditGAN_tool import Tool
+
+#delete this when more competent.
+try:
+    from utils.model_utils import *
+    print('Funciono a la primera')
+except:
+    print('strike 1')
+try:
+    from utils.model_utils import *
+    print('Funciono a la seguna')
+except:
+    print('strike 2')
+try:
+    from utils.model_utils import *
+    print('Tercera es la vencida?')
+except:
+    print(':(')
+
 from models.EditGAN.EditGAN_tool import Tool
 
 np.random.seed(6)

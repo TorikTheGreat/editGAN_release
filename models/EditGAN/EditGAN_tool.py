@@ -44,7 +44,8 @@ CORS(app, support_credentials=True)
 
 class Tool(object):
     def __init__(self, ce_loss_weight=1, encoder_loss_weight=1):
-        args_file = "experiments/tool_car.json"
+        #args_file = "experiments/tool_car.json"
+        args_file = "experiments/tool_nema.json"
         self.args = json.load(open(args_file, 'r'))
 
         resume = self.args['encoder_checkpoint']
@@ -126,7 +127,7 @@ class Tool(object):
     def prepare_datasetGAN_data(self, embedding_path):
         test_latent_list = []
 
-        for i in tqdm(range(10)):
+        for i in tqdm(range(10)): #def:10
             curr_latent = np.load(os.path.join(embedding_path, 'latents_image_%0d.npy' % i))
             test_latent_list.append(curr_latent)
             optimized_latent = torch.from_numpy(curr_latent).type(torch.FloatTensor).to(device).unsqueeze(0)
@@ -301,7 +302,7 @@ class Tool(object):
             image_features.append(self.bi_upsamplers[i](
                 affine_layers[i]))
         image_features = torch.cat(image_features, 1)
-        image_features = image_features[:, :, 64:448]
+        image_features = image_features[:, :, :]
         image_features = image_features[0]
         image_features = image_features.reshape(self.args['dim'], -1).transpose(1, 0)
         seg_mode_ensemble = []
@@ -309,7 +310,8 @@ class Tool(object):
             classifier = self.classifier_list[MODEL_NUMBER]
             img_seg = classifier(image_features)
             seg_mode_ensemble.append(img_seg.unsqueeze(0))
-        img_seg_final = torch.argmax(torch.mean(torch.cat(seg_mode_ensemble, 0), 0),1).reshape(384, 512).detach().cpu().numpy()
+        
+        img_seg_final = torch.argmax(torch.mean(torch.cat(seg_mode_ensemble, 0), 0),1).reshape(256, 256).detach().cpu().numpy()
         del (affine_layers)
         return img_out, img_seg_final
 
@@ -398,7 +400,8 @@ class Tool(object):
             style_latents = latent_to_image(self.g_all, self.bi_upsamplers, latent_in, return_stylegan_latent=True)
             img_out, img_seg_final = self.run_seg(style_latents)
 
-        img_out = img_out[0, 64:448]
+        #img_out = img_out[0, 64:448]
+        img_out = img_out[0,:]
         return img_out, img_seg_final, style_latents[0].detach().cpu().numpy()
 
 

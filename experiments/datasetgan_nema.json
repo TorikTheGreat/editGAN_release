@@ -1,0 +1,21 @@
+{
+  "exp_dir": "model_interpreter/nema",
+  "batch_size": 64,
+  "category": "nema",
+  "debug": false,
+  "dim": [256, 256, 5888],
+  "number_class": 1,
+  "testing_data_number_class": 1,
+  "max_training": 16,
+  "stylegan_ver": "2",
+  "annotation_data_from_w": true,
+  "annotation_mask_path":  "/home/marco/Desktop/proyecto_graduacion/editGAN_release/labeled_data/mask_out",
+  "testing_path": "",
+  "stylegan_checkpoint": "/home/marco/Desktop/proyecto_graduacion/editGAN_release/.checkpoint/stylegan2/network-snapshot-005765.pt",
+  "model_num": 10,
+    "upsample_mode":"bilinear",
+    "optimized_latent_path": {"train":  "/home/marco/Desktop/proyecto_graduacion/editGAN_release/model_encoder/nema/training_embedding",
+                            "test":  "" }
+}
+
+

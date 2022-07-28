@@ -21,7 +21,25 @@ import numpy as np
 device_ids = [0]
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
-from utils.model_utils import *
+from sys import getsizeof
+
+#delete this when more competent.
+try:
+    from utils.model_utils import *
+    print('Funciono a la primera')
+except:
+    print('strike 1')
+try:
+    from utils.model_utils import *
+    print('Funciono a la seguna')
+except:
+    print('strike 2')
+try:
+    from utils.model_utils import *
+    print('Tercera es la vencida?')
+except:
+    print(':(')
+
 from utils.data_utils import *
 from models.DatasetGAN.classifer import pixel_classifier
 
@@ -33,17 +51,30 @@ from utils.data_utils import car_32_palette as palette
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 import cv2
 
+# Weights and biases integration
+#import wandb
+#wandb.init(project="Proyecto_graduación", entity="mzolla")
+
+#BORRA ESTO
+import gc
+
+print(f'Device: {device}')
+
+
 class trainData(Dataset):
 
     def __init__(self, X_data, y_data):
         self.X_data = X_data
         self.y_data = y_data
+        print('trainData init complete')
 
     def __getitem__(self, index):
         return self.X_data[index], self.y_data[index]
+        print('trainData getitem complete')
 
     def __len__(self):
         return len(self.X_data)
+        print('trainData init complete')
 
 
 def prepare_data(args, palette):
@@ -71,6 +102,7 @@ def prepare_data(args, palette):
     im_list = []
     latent_all = latent_all[:args['max_training']]
     num_data = len(latent_all)
+    print(f'num_data: {num_data}')  #####
 
     for i in range(len(latent_all)):
 
@@ -84,7 +116,8 @@ def prepare_data(args, palette):
 
         mask_list.append(mask)
 
-        im_name = os.path.join( args['annotation_mask_path'], 'image_%d.jpg' % i)
+        #im_name = os.path.join( args['annotation_mask_path'], 'image_%d.jpg' % i)
+        im_name = os.path.join( args['annotation_mask_path'], 'image_%d.png' % i)
         img = Image.open(im_name)
         img = img.resize((args['dim'][1], args['dim'][0]))
 
@@ -107,7 +140,10 @@ def prepare_data(args, palette):
 
     vis = []
     for i in range(len(latent_all) ):
-
+	
+	#borra esto
+        print(f'i: {i}')
+	
         gc.collect()
 
         latent_input = latent_all[i].float()
@@ -145,12 +181,42 @@ def prepare_data(args, palette):
 
 def main(args
          ):
+    
+    #Weights and biases config
+   # wandb.config = {
+        
+    #    'lr':0.001,
+     #   'nepochs':1000
+        
+      #  }
 
     all_feature_maps_train_all, all_mask_train_all, num_data = prepare_data(args, palette)
+    
+    print('Data preparation complete')
+    
+    ######### DELETE THIS AFTER ########################
+    #FREE UP RAM BY DELETING VARIABLES
+    #for name in vars().keys():
+    #    if name != 'all_feature_maps_train_all':
+    #        print(f'Deleting: {name}')
+    #        del name
+    #        gc.collect()
+    
+    # MEASURE VARIABLE VOLUME
+    #foo = torch.FloatTensor(all_feature_maps_train_all)
+    #foo = getsizeof(foo)/(1024*1024*1024)
+    #print( f'Size of all_feature_maps_train_all: {foo}' )
+    
 
+    ######################################################
+    
 
     train_data = trainData(torch.FloatTensor(all_feature_maps_train_all),
                            torch.FloatTensor(all_mask_train_all))
+    
+    
+    
+    print('Training data assignment complete')
 
 
     count_dict = get_label_stas(train_data)
@@ -186,7 +252,7 @@ def main(args
         break_count = 0
         best_loss = 10000000
         stop_sign = 0
-        for epoch in range(100):
+        for epoch in range(1000):
             for X_batch, y_batch in train_loader:
                 X_batch, y_batch = X_batch.to(device), y_batch.to(device)
                 y_batch = y_batch.type(torch.long)
@@ -198,6 +264,10 @@ def main(args
 
                 loss.backward()
                 optimizer.step()
+                
+                #weights and biases
+                #wandb.log({'loss': loss})
+                #wandb.watch(classifier)
 
                 iteration += 1
                 if iteration % 1000 == 0:

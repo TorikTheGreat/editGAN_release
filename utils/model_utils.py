@@ -28,8 +28,20 @@ from models.DatasetGAN.classifer import pixel_classifier
 from collections import OrderedDict
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+## New inclusions
+import legacy
+import dnnlib
+from training import training_loop
+from torch_utils import training_stats
+from torch_utils import custom_ops
+# Incluye el generador de stylegan2-ada-pytorch
+from models.stylegan2_ada_pytorch.networks import Generator as Style2adatorchGen
+from models.stylegan2_ada_pytorch.train import setup_training_loop_kwargs
+import time
+import os
+
 def latent_to_image(g_all, upsamplers, latents, return_upsampled_layers=False, use_style_latents=False,
-                    process_out=True, return_stylegan_latent=False, dim=512,
+                    process_out=True, return_stylegan_latent=False, dim=256, #512
                     return_only_im=False, noise=None):
     '''Given a input latent code, generate corresponding image and concatenated feature maps'''
 
@@ -50,7 +62,7 @@ def latent_to_image(g_all, upsamplers, latents, return_upsampled_layers=False, u
 
     if return_only_im:
         if process_out:
-            if img_list.shape[-2] > 512:
+            if img_list.shape[-2] > 256: #512
                 img_list = upsamplers[-1](img_list)
             img_list = img_list.cpu().detach().numpy()
             img_list = process_image(img_list)
@@ -73,7 +85,7 @@ def latent_to_image(g_all, upsamplers, latents, return_upsampled_layers=False, u
     else:
         affine_layers_upsamples = affine_layers
 
-    if img_list.shape[-2] != 512:
+    if img_list.shape[-2] != 256: #512
         img_list = upsamplers[-1](img_list)
 
     if process_out:
@@ -269,8 +281,13 @@ def prepare_model(args, classfier_checkpoint_path="", classifier_iter=10000, num
         out_res = 256
 
     else:
-        res = 512
-        out_res = 512
+        # res = 512
+        # out_res = 512
+        
+        # Por el momento estoy usando 256. Lo hardcodearé para ver si lo logro poner a funcionar
+        # y luego lo pulo para que sea un poco más sofisticado.
+        res = 256
+        out_res = 256
 
     if args['stylegan_ver'] == "1":
 
@@ -300,11 +317,17 @@ def prepare_model(args, classfier_checkpoint_path="", classifier_iter=10000, num
         g_all = nn.DataParallel(g_all, device_ids=device_ids).cuda()
 
     elif args['stylegan_ver'] == "2":
+        
         g_all = Stylegan2Generator(res, 512, 8, channel_multiplier=2, randomize_noise=False)
         checkpoint = torch.load(args['stylegan_checkpoint'])
 
+        
         print("Load stylegan from, " , args['stylegan_checkpoint'], " at res, ", str(res))
         g_all.load_state_dict(checkpoint["g_ema"], strict=True)
+        
+
+        
+        
         avg_latent = g_all.make_mean_latent(4086)
 
 
@@ -367,12 +390,13 @@ def prepare_model(args, classfier_checkpoint_path="", classifier_iter=10000, num
                                                          MODEL_NUMBER) + '.pth'))
             else:
                 checkpoint = torch.load(os.path.join(classfier_checkpoint_path,
-                                                     'car_model_' + str(MODEL_NUMBER) + '.pth'))
-
+                                                     #'car_model_' + str(MODEL_NUMBER) + '.pth'))
+                                                     'model_' + str(MODEL_NUMBER) + '.pth'))
+                
             classifier.load_state_dict(checkpoint['model_state_dict'], strict=True)
             classifier.eval()
             classifier_list.append(classifier)
-
+            
         for c in classifier_list:
             for i in c.parameters():
                 i.requires_grad = False

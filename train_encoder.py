@@ -27,12 +27,35 @@ from torch.utils.data import Dataset, DataLoader
 from models.encoder.encoder import FPNEncoder
 
 from utils.data_utils import *
-from utils.model_utils import *
+#from utils.model_utils import *
 
 import torch.optim as optim
 import argparse
 import glob
 import lpips
+
+#delete this when more competent.
+try:
+    from utils.model_utils import *
+    print('Funciono a la primera')
+except:
+    print('strike 1')
+try:
+    from utils.model_utils import *
+    print('Funciono a la seguna')
+except:
+    print('strike 2')
+try:
+    from utils.model_utils import *
+    print('Tercera es la vencida?')
+except:
+    print(':(')
+
+# Weights and biases integration
+import wandb
+wandb.init(project="Proyecto_graduación", entity="mzolla")
+
+
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -171,6 +194,16 @@ def main(args, resume):
         model='net-lin', net='vgg',
         use_gpu=device.startswith('cuda'), normalize=args['normalize']
     ).to(device)
+    
+    # Weights and biases config
+    wandb.config = {
+        
+        'lr':args['lr'],
+        'nepochs':10000
+        
+        }
+    
+    
     stylegan_encoder = FPNEncoder(3, n_latent=args['n_latent'], only_last_layer=args['use_w'], same_view_code=args['same_view_code'])
     stylegan_encoder = stylegan_encoder.to(device)
 
@@ -204,9 +237,10 @@ def main(args, resume):
         sampling_latent = np.random.randn(1, 512)
 
     best_loss = 999999999
-    for epoch in range(100):
+    for epoch in range(10000):
 
         for i, da, in enumerate(train_data_loader):
+            
             if i % 10 == 0:
                 gc.collect()
             img_tensor = da[0].to(device)
@@ -310,7 +344,7 @@ def main(args, resume):
                     print(epoch, 'epoch', 'iteration', i, 'loss', loss)
 
 
-            if i % 2000 == 0 and i!=0 and not args['debug']:
+            if i % 100 == 0 and i!=0 and not args['debug']:
                 image_name = os.path.join(args['exp_dir'], 'Epoch_' + str(epoch)  + "_iter_"+ str(i) + '.png')
                 img_out = np.transpose(img_out.detach().cpu().numpy()[0], (1,2,0))
                 img_gt = np.transpose(img_tensor.cpu().numpy()[0], (1,2,0))
@@ -328,6 +362,11 @@ def main(args, resume):
                 print('Save to:', model_path)
                 torch.save({'model_state_dict': stylegan_encoder.state_dict()},
                            model_path)
+                
+                #weights and biases
+                wandb.log({'loss': loss})
+                wandb.watch(stylegan_encoder)
+                
                 if epoch > 2:
                     if loss < best_loss:
                         best_loss = loss
@@ -335,7 +374,9 @@ def main(args, resume):
                         print('Save to:', model_path)
                         torch.save({'model_state_dict': stylegan_encoder.state_dict()},
                                    model_path)
-
+            
+            
+ 
             del loss
             if args['sampling_training']:
                 del sampling_loss
