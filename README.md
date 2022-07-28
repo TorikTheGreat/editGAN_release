@@ -1,5 +1,7 @@
 # EditGAN 
 
+*for a description of this particular Fork, see https://github.com/TorikTheGreat/editGAN_release/blob/release_final/extra_utils/README.md
+
 <div align="center">
 Official code and tool release for: 
 
