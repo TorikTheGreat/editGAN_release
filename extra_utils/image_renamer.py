@@ -12,7 +12,7 @@ from os import walk
 import os
 
 
-parser = argparse.ArgumentParser(description='Cambiador de nombres de las imagenes sinteticas al formato image_#.png')
+parser = argparse.ArgumentParser(description='Cambiador de nombres de las imagenes sinteticas al formato image_#.png.')
 
 parser.add_argument('img_in', type=str, help='Dirección de la carpeta con las imágenes.')
 
@@ -20,6 +20,7 @@ args = parser.parse_args()
 
 # get file names
 filenames = next(walk(args.img_in), (None, None, []))[2]  # [] if no file
+filenames.sort()
 print(filenames)
 
 counter = 0

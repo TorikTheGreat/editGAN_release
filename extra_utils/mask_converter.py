@@ -22,16 +22,18 @@ args = parser.parse_args()
 
 # get file names
 filenames = next(walk(args.mask_in), (None, None, []))[2]  # [] if no file
+filenames.sort()
 print(filenames)
 
 
+counter = 0
 
 for i in filenames:
     path = args.mask_in + '/' + i
     img = Image.open(path)
     img_npy = np.asarray(img)[:,:,0]/255
-    new_name ='image_mask' + i[6:-4] + '.npy' 
+    new_name ='image_mask' + str(counter) + '.npy' 
     
     np.save(args.mask_out + '/' + new_name , img_npy)
     print(f'Mask {i} saved as {new_name}')
-    
+    counter += 1
