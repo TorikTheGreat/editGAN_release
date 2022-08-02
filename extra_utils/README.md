@@ -16,13 +16,20 @@ Este proyecto utiliza el modelo editGAN de Nvidia para generar parejas de imáge
 6. Incluir la dirección del conjunto etiquetado (imágenes y máscaras deben estar en la misma carpeta) en experiments/datasetgan_nema.json, en la variable llamada annotation_mask_path
 7. Introducir el conjunto etiquetado en el espacio latente de StyleGAN2 con el comando 
     ```sh
-    python train_encoder.py --exp experiments/encoder_car.json --resume *encoder checkppoint* --testing_path data/annotation_car_32_clean --latent_sv_folder model_encoder/car_batch_8_loss_sampling_train_stylegan2/training_embedding --test True
+    python train_encoder.py --exp experiments/encoder_car.json --resume *encoder checkppoint* --testing_path data/annotation_car_32_clean --latent_sv_folder model_encoder/nema/training_embedding --test True
     ```
 8. Agregar la carpeta resultante a la variable optimized_latent_path en experiments/datasetgan_nema.json
 9. Entrenar a DatasetGAN (que es responsable de la segmentación) con el comando
     ```sh
     python train_interpreter.py --exp experiments/datasetgan_nema.json
     ```
+    NOTA: Este paso requiere de mucha RAM. De no tener suficiente, una alternativa no ideal es usar memoria virtual para completar el entrenamiento, lo que lo hará muy lento. Para hacer esto es necesario contar con un espacio swap suficientemente grande y utilizar de comando
+    
+    ```sh
+    systemd-run --scope -p MemoryMax=26G python train_interpreter.py --exp experiments/datasetgan_nema.json
+    ```
+    Esto hace que el programa solo pueda usar MemoryMax de la ram, obligando al sistema a utilizar el espacio swap para el resto que necesite el entrenamiento.
+        
 10. Utilizar el script get_image_from_mask.py para generar parejas imagen-máscara o para generar una segmentación de imágenes reales de entrada.
 
 
