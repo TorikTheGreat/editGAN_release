@@ -6,6 +6,9 @@ import argparse
 import json
 from PIL import Image, ImageDraw
 import numpy as np
+from os import walk
+import os
+
 
 
 parser = argparse.ArgumentParser(description='Generador de máscaras a partir de anotaciones VIA.')
@@ -69,56 +72,64 @@ def crop_img(img, mask, new_name, img_dims, x_list, y_list):
 with open(args.label_file) as f:
     annotations = json.load(f)
 
+# get image file names
+filenames = next(walk(args.img_in), (None, None, []))[2]  # [] if no file
+filenames.sort()
+
 img_data = annotations['_via_img_metadata']
 img_keys = img_data.keys()
 
 for i in img_keys:
     
+    
+    
     current_img = img_data[i]
     img_name = current_img['filename']
     
-    # Carga imagen
-    path = args.img_in + '/' + img_name
-    img = Image.open( path )
+    if img_name in filenames:
     
-    img_dims = img.size
-    
-    # Crea nombre para la máscara
-    new_name = img_name[:-4] + '_mask.png'
-    
-    # make a list of touples
-    if current_img['regions']:
-        x_list = current_img['regions'][0]['shape_attributes']['all_points_x']
-        y_list = current_img['regions'][0]['shape_attributes']['all_points_y']
-        coords = list(zip(x_list, y_list))
-        new_img = Image.new("RGB", img_dims)
-        img1 = ImageDraw.Draw(new_img)
-        img1.polygon(coords, fill = 'white', outline = 'white')
+        # Carga imagen
+        path = args.img_in + '/' + img_name
+        img = Image.open( path )
         
-        # save mask
-        new_img = new_img.save(args.mask_out + '/' + new_name )
-        print(f'Saved {img_name}\'s mask as {new_name} ')
+        img_dims = img.size
+        
+        # Crea nombre para la máscara
+        new_name = img_name[:-4] + '_mask.png'
+        
+        # make a list of touples
+        if current_img['regions']:
+            x_list = current_img['regions'][0]['shape_attributes']['all_points_x']
+            y_list = current_img['regions'][0]['shape_attributes']['all_points_y']
+            coords = list(zip(x_list, y_list))
+            new_img = Image.new("RGB", img_dims)
+            img1 = ImageDraw.Draw(new_img)
+            img1.polygon(coords, fill = 'white', outline = 'white')
+            
+            # save mask
+            new_img = new_img.save(args.mask_out + '/' + new_name )
+            print(f'Saved {img_name}\'s mask as {new_name} ')
+            
+            
+            if args.mask_edit_out is not None:
+                # Carga máscara
+                mask_path = args.mask_out + '/' + new_name
+                mask = Image.open ( mask_path )
+                crop_img(img, mask, new_name, img_dims, x_list, y_list)
+                mask.close()
+    
+    
+        else:
+            print(f'No label data for {img_name}. Skipping...')
+            
+        # Cierra las imágenes
+        img.close()
         
         
-        if args.mask_edit_out is not None:
-            # Carga máscara
-            mask_path = args.mask_out + '/' + new_name
-            mask = Image.open ( mask_path )
-            crop_img(img, mask, new_name, img_dims, x_list, y_list)
-            mask.close()
-
-
-    else:
-        print(f'No label data for {img_name}. Skipping...')
         
-    # Cierra las imágenes
-    img.close()
-    
-    
-    
-    
-    
-    
+        
+        
+        
     
     
     
