@@ -18,36 +18,42 @@ parser.add_argument('--img_edit_out', type=str, help='Dirección de la carpeta d
 
 args = parser.parse_args()
 
-def crop_img(img_name, new_name, img_dims, x_list):
+def crop_img(img, mask, new_name, img_dims, x_list, y_list):
     
     width, height = img_dims
-    
-    # load mask and image
-    mask_path = args.mask_out + '/' + new_name
-    img_path = args.img_in + '/' + img_name
-    
-    mask = Image.open ( mask_path )
-    img = Image.open( img_path )
-    
-    # crop
-    if min( x_list ) <= 128 :
+    # Si el nematodo cabe en una caja 256x256:
+    if  max(x_list) - min(x_list) <= 256 and max(y_list) - min(y_list):
         
-        mask_edit = mask.crop(( 0, 0, 768, height  ))
-        img_edit = img.crop(( 0, 0, 768, height  ))
+        # Crop
+        left_border = max(0, round( ( min(x_list) + max(x_list) -256 )/2 ) )
+        right_border = left_border + 256
         
+        top_border = max(0, round( ( min(y_list) + max(y_list) -256 )/2 ) )
+        bottom_border = top_border + 256
         
-    elif max( x_list ) >= 896:
+        mask_edit = mask.crop(( left_border, top_border, right_border, bottom_border  ))
+        img_edit = img.crop(( left_border, top_border, right_border, bottom_border  ))
         
-        mask_edit = mask.crop(( 256, 0, width, height  ))
-        img_edit = img.crop(( 256, 0, width, height  ))
-        
+    # Si no, hay que cropear y escalar. 
     else:
-        mask_edit = mask.crop(( 128, 0, 896, height  ))
-        img_edit = img.crop(( 128, 0, 896, height  ))
-    
-    # Resize images
-    mask_edit = mask_edit.resize((256,256))
-    img_edit = img_edit.resize((256,256))
+        if min( x_list ) <= 128 :
+            
+            mask_edit = mask.crop(( 0, 0, 768, height  ))
+            img_edit = img.crop(( 0, 0, 768, height  ))
+            
+            
+        elif max( x_list ) >= 896:
+            
+            mask_edit = mask.crop(( 256, 0, width, height  ))
+            img_edit = img.crop(( 256, 0, width, height  ))
+            
+        else:
+            mask_edit = mask.crop(( 128, 0, 896, height  ))
+            img_edit = img.crop(( 128, 0, 896, height  ))
+        
+        # Resize images
+        mask_edit = mask_edit.resize((256,256))
+        img_edit = img_edit.resize((256,256))
     
     # keep mask monocrhomatic
     conversion = np.array(mask_edit)
@@ -59,11 +65,6 @@ def crop_img(img_name, new_name, img_dims, x_list):
     mask_edit = mask_edit.save(args.mask_edit_out + '/' + new_name[:-4] + '_edit.png' )
     img_edit = img_edit.save(args.img_edit_out + '/' + img_name[:-4] + '_edit.png' )
 
-def get_img_dims(img_name):
-    path = args.img_in + '/' + img_name
-    im = Image.open( path )
-    return im.size
-
 
 with open(args.label_file) as f:
     annotations = json.load(f)
@@ -72,11 +73,18 @@ img_data = annotations['_via_img_metadata']
 img_keys = img_data.keys()
 
 for i in img_keys:
-   
+    
     current_img = img_data[i]
     img_name = current_img['filename']
-    img_dims = get_img_dims(img_name)
     
+    # Carga imagen
+    path = args.img_in + '/' + img_name
+    img = Image.open( path )
+    
+    img_dims = img.size
+    
+    # Crea nombre para la máscara
+    new_name = img_name[:-4] + '_mask.png'
     
     # make a list of touples
     if current_img['regions']:
@@ -88,17 +96,24 @@ for i in img_keys:
         img1.polygon(coords, fill = 'white', outline = 'white')
         
         # save mask
-        new_name = img_name[:-4] + '_mask.png'
         new_img = new_img.save(args.mask_out + '/' + new_name )
         print(f'Saved {img_name}\'s mask as {new_name} ')
         
         
         if args.mask_edit_out is not None:
-            crop_img(img_name, new_name, img_dims, x_list)
+            # Carga máscara
+            mask_path = args.mask_out + '/' + new_name
+            mask = Image.open ( mask_path )
+            crop_img(img, mask, new_name, img_dims, x_list, y_list)
+            mask.close()
 
 
     else:
-        print(f'No annotation data for {img_name}. Skipping...')
+        print(f'No label data for {img_name}. Skipping...')
+        
+    # Cierra las imágenes
+    img.close()
+    
     
     
     
