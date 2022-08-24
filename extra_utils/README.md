@@ -42,4 +42,7 @@ Dos scripts adicionales fueron utilizados durante el proyecto:
     Utilizado para generar máscaras a partir de un file de anotaciones .json en el formato VIA (ver https://github.com/ox-vgg/via)
 - simple_aug.py:
 	Genera 7 imágenes adicionales por cada una de entrada con rotaciones de 90&deg; y reflexiones.
+- data_processor.py: 
+	Una versión consolidada de image_renamer y mask_converter que elige una cantidad determinada de ejemplos aleatorios con sus máscaras para datasetGAN.
+	
 
