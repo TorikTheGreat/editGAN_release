@@ -21,38 +21,67 @@ parser.add_argument('--img_edit_out', type=str, help='Dirección de la carpeta d
 
 args = parser.parse_args()
 
+# Margen de pixeles al rededor de un nematodo recortado
+crop_margin = 7
+
 def crop_img(img, mask, new_name, img_dims, x_list, y_list):
     
     width, height = img_dims
     # Si el nematodo cabe en una caja 256x256:
-    if  max(x_list) - min(x_list) <= 256 and max(y_list) - min(y_list):
+    if  max(x_list) - min(x_list) <= 256 and max(y_list) - min(y_list) <= 256:
         
-        # Crop
+        # Determinar bordes
         left_border = max(0, round( ( min(x_list) + max(x_list) -256 )/2 ) )
         right_border = left_border + 256
         
         top_border = max(0, round( ( min(y_list) + max(y_list) -256 )/2 ) )
         bottom_border = top_border + 256
         
+        # Ajusta si te saliste a la derecha o abajo
+        if right_border > width:
+            left_border -= right_border - width
+            right_border -= right_border - width
+        if bottom_border > height:
+            top_border -= bottom_border - height
+            bottom_border -= bottom_border - height
+            
+        # Crop
         mask_edit = mask.crop(( left_border, top_border, right_border, bottom_border  ))
         img_edit = img.crop(( left_border, top_border, right_border, bottom_border  ))
         
-    # Si no, hay que cropear y escalar. 
+    # Si no, hay que cropear al rededor del nematodo y escalar. 
+    # NOTA: es importante recortar un cuadrado al rededor del nematodo para que a la hora 
+    #       de escalar se mantengan las proporciones
     else:
-        if min( x_list ) <= 128 :
+	# Establece la dimensión más grande de la caja que contiene al nematodo
+        square_side = max( max(x_list) - min(x_list), max(y_list) - min(y_list) ) + 2*crop_margin
+        
+        # Determinar bordes
+        if max(x_list) - min(x_list) > max(y_list) - min(y_list):
+            left_border = min(x_list) - crop_margin
+            right_border = left_border + square_side
+        	
+            top_border = max(0, round( ( min(y_list) + max(y_list) - square_side )/2 ) )
+            bottom_border = top_border + square_side
+        
+        elif max(x_list) - min(x_list) < max(y_list) - min(y_list):
+            top_border = min(y_list) - crop_margin
+            bottom_border = top_border + square_side
+        	
+            left_border = max(0, round( ( min(x_list) + max(x_list) - square_side )/2 ) )
+            right_border = left_border + square_side
             
-            mask_edit = mask.crop(( 0, 0, 768, height  ))
-            img_edit = img.crop(( 0, 0, 768, height  ))
-            
-            
-        elif max( x_list ) >= 896:
-            
-            mask_edit = mask.crop(( 256, 0, width, height  ))
-            img_edit = img.crop(( 256, 0, width, height  ))
-            
-        else:
-            mask_edit = mask.crop(( 128, 0, 896, height  ))
-            img_edit = img.crop(( 128, 0, 896, height  ))
+        # Ajusta si te saliste a la derecha o abajo
+        if right_border > width:
+            left_border -= right_border - width
+            right_border -= right_border - width
+        if bottom_border > height:
+            top_border -= bottom_border - height
+            bottom_border -= bottom_border - height
+	        
+        # Crop
+        mask_edit = mask.crop(( left_border, top_border, right_border, bottom_border  ))
+        img_edit = img.crop(( left_border, top_border, right_border, bottom_border  ))
         
         # Resize images
         mask_edit = mask_edit.resize((256,256))
