@@ -44,5 +44,6 @@ Dos scripts adicionales fueron utilizados durante el proyecto:
 	Genera 7 imágenes adicionales por cada una de entrada con rotaciones de 90&deg; y reflexiones.
 - data_processor.py: 
 	Una versión consolidada de image_renamer y mask_converter que elige una cantidad determinada de ejemplos aleatorios con sus máscaras para datasetGAN.
-	
+- test_image_picker.py:
+	Un pequeño programa para elegir al azar una cantidad determinada de ejemplos para usar en las pruebas al final del experimento.
 
