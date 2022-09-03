@@ -344,7 +344,7 @@ def main(args, resume):
                     print(epoch, 'epoch', 'iteration', i, 'loss', loss)
 
 
-            if i % 100 == 0 and i!=0 and not args['debug']:
+            if i % 10000 == 0 and i!=0 and not args['debug']:
                 image_name = os.path.join(args['exp_dir'], 'Epoch_' + str(epoch)  + "_iter_"+ str(i) + '.png')
                 img_out = np.transpose(img_out.detach().cpu().numpy()[0], (1,2,0))
                 img_gt = np.transpose(img_tensor.cpu().numpy()[0], (1,2,0))
@@ -365,7 +365,7 @@ def main(args, resume):
                 
                 #weights and biases
                 wandb.log({'loss': loss})
-                wandb.watch(stylegan_encoder)
+                #wandb.watch(stylegan_encoder)
                 
                 if epoch > 2:
                     if loss < best_loss:

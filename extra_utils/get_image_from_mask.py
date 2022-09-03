@@ -147,7 +147,6 @@ elif args.mode == 3:
 
         img_out = np.squeeze(img_out, axis=0)
 
-        #np.save('/home/marco/Desktop/proyecto_graduacion/editGAN_release/labeled_data/mode_3/fuck', img_out)
 
         
         imageio.imsave(args.img_out_path + '/' + 'image_' + str(i) + '.png', img_out)
