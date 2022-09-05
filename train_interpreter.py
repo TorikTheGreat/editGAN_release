@@ -52,8 +52,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 import cv2
 
 # Weights and biases integration
-#import wandb
-#wandb.init(project="Proyecto_graduación", entity="mzolla")
+import wandb
+wandb.init(project="Proyecto_graduación", entity="mzolla")
 
 #BORRA ESTO
 import gc
@@ -266,7 +266,7 @@ def main(args
                 optimizer.step()
                 
                 #weights and biases
-                #wandb.log({'loss': loss})
+                wandb.log({'loss': loss})
                 #wandb.watch(classifier)
 
                 iteration += 1
