@@ -3,7 +3,7 @@
   "category": "nema",
   "im_size": [256, 256],
   "n_latent": 14,
-  "lr": 3e-7,
+  "lr": 3e-5,
   "debug": false,
   "bs": 8,
   "sample_bs": 2,

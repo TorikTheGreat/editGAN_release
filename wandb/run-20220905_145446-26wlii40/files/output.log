@@ -1,0 +1,14 @@
+Opt {'exp_dir': 'model_encoder/nema', 'category': 'nema', 'im_size': [256, 256], 'n_latent': 14, 'lr': 3e-05, 'debug': False, 'bs': 8, 'sample_bs': 2, 'avg_latent': '', 'stylegan_checkpoint': '/home/marco/Desktop/proyecto_graduacion/editGAN_release/.checkpoint/stylegan2/network-snapshot-005765.pt', 'max_label': 20, 'classfier_checkpoint': '', 'training_data_path': '/home/marco/Desktop/proyecto_graduacion/editGAN_release/data_nema', 'label_data_path': '', 'testing_data_path': '', 'sampling_training': True, 'use_w': False, 'same_view_code': False, 'truncation': False, 'normalize': True, 'stylegan_ver': '2', 'train_real_start_epochs': 5, 'dim': 5888, 'loss_dict': {'p_loss': 10, 'mse_loss': 1, 'encoder_loss': 5, 'e_label_ce_loss': 1, 'e_label_dice_loss': 1}, 'use_noise': False, 'noise_loss_weight': 100}
+Load stylegan from,  /home/marco/Desktop/proyecto_graduacion/editGAN_release/.checkpoint/stylegan2/network-snapshot-005765.pt  at res,  256
+ make_mean_latent
+Setting up Perceptual loss...
+Loading model from: /home/marco/Desktop/proyecto_graduacion/repo/editGAN_release/lpips/weights/v0.1/vgg.pth
+...[net-lin [vgg]] initialized
+...Done
+/home/marco/anaconda3/envs/editgan/lib/python3.7/site-packages/torch/nn/functional.py:3635: UserWarning: Default upsampling behavior when mode=bilinear is changed to align_corners=False since 0.4.0. Please specify align_corners=True if the old behavior is desired. See the documentation of nn.Upsample for details.
+  "See the documentation of nn.Upsample for details.".format(mode)
+Training data length,  13806
+0 epoch iteration 0 loss:  5.0795488357543945  sampling loss:  5.794403076171875
+0 epoch iteration 10 loss:  4.920009136199951  sampling loss:  5.1456379890441895
+0 epoch iteration 20 loss:  5.054903030395508  sampling loss:  5.011380672454834
+0 epoch iteration 30 loss:  4.884171009063721  sampling loss:  4.568228244781494

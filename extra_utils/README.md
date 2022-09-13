@@ -46,4 +46,6 @@ Dos scripts adicionales fueron utilizados durante el proyecto:
 	Una versión consolidada de image_renamer y mask_converter que elige una cantidad determinada de ejemplos aleatorios con sus máscaras para datasetGAN.
 - test_image_picker.py:
 	Un pequeño programa para elegir al azar una cantidad determinada de ejemplos para usar en las pruebas al final del experimento.
+- mosaic_maker.py:
+	Un script para generar mosaicos de los resultados.
 

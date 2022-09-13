@@ -29,14 +29,14 @@ from collections import OrderedDict
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ## New inclusions
-import legacy
-import dnnlib
-from training import training_loop
-from torch_utils import training_stats
-from torch_utils import custom_ops
+#import legacy
+#import dnnlib
+#from training import training_loop
+#from torch_utils import training_stats
+#from torch_utils import custom_ops
 # Incluye el generador de stylegan2-ada-pytorch
-from models.stylegan2_ada_pytorch.networks import Generator as Style2adatorchGen
-from models.stylegan2_ada_pytorch.train import setup_training_loop_kwargs
+#from models.stylegan2_ada_pytorch.networks import Generator as Style2adatorchGen
+#from models.stylegan2_ada_pytorch.train import setup_training_loop_kwargs
 import time
 import os
 
