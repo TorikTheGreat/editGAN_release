@@ -1,6 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Esta es una pequeña herramienta para producir máscaras a partir de un file .json
+de anotaciones en el formato VIA. Sus enrtadas son img_in, la carpeta donde se
+encuentran las imágenes que corresponden a las máscaras, y label_file, el documento
+con las anotaciones en formato VIA.
 
+Sus salidas son las siguientes:
+    
+    mask_out: directorio donde guardar las máscaras generadas sin modificación alguna
+    mask_edit_out: directorio donde guardar las máscaras después de haber sido 
+        recortadas y escaladas para que los nematodos queden en el centro.
+    img_edit_out: directorio donde guardar las imágenes editadas de la misma manera
+        que las máscaras para que mantengan su correspondencia.
+
+"""
 
 import argparse
 import json

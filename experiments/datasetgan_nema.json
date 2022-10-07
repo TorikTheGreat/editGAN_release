@@ -9,12 +9,12 @@
   "max_training": 16,
   "stylegan_ver": "2",
   "annotation_data_from_w": true,
-  "annotation_mask_path":  "/home/marco/Desktop/proyecto_graduacion/editGAN_release/labeled_data/mask_out",
+  "annotation_mask_path":  "extra_utils/data/datasetgan_pairs",
   "testing_path": "",
-  "stylegan_checkpoint": "/home/marco/Desktop/proyecto_graduacion/editGAN_release/.checkpoint/stylegan2/network-snapshot-005765.pt",
+  "stylegan_checkpoint": ".checkpoint/stylegan2/network-snapshot.pt",
   "model_num": 10,
     "upsample_mode":"bilinear",
-    "optimized_latent_path": {"train":  "/home/marco/Desktop/proyecto_graduacion/editGAN_release/model_encoder/nema/training_embedding",
+    "optimized_latent_path": {"train":  "model_encoder/nema/training_embedding",
                             "test":  "" }
 }
 

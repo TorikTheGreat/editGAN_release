@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Script para realizar aumentos básicos a las imágenes. Por el momento solo realiza
+rotaciones de 90 grados y espejismos, produciendo 7 imágenes adicionales por cada
+una que entra. Si fuera necesario, se podrían incluir más adelante cambios en brillo,
+color,traslaciones y demás.
+
+""" 
+
 from os import walk
 import os
 from PIL import Image, ImageOps

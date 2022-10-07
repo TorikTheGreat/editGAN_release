@@ -12,7 +12,7 @@ Este proyecto utiliza el modelo editGAN de Nvidia para generar parejas de imáge
     train_encoder.py --exp experiments/encoder_nema.json
     ```
 
-5. Preparar un pequeño conjunto etiquetado (de aprox. 16 ejemplos, de otra manera se requiere de mucha ram) donde las imágenes estén nombradas según el formato image_#.png y las máscaras según el formato image_mask_#.npy. Para cambiar automáticamente el nombre, ver el script image_renamer.py y para convertir las máscaras a formato .npy ver script mask_converter.py
+5. Preparar un pequeño conjunto etiquetado (de aprox. 16 ejemplos, de otra manera se requiere de mucha ram) donde las imágenes estén nombradas según el formato image_#.png y las máscaras según el formato image_mask_#.npy. Para hacer estos cambios automáticamente, ver el script data_processor.py
 6. Incluir la dirección del conjunto etiquetado (imágenes y máscaras deben estar en la misma carpeta) en experiments/datasetgan_nema.json, en la variable llamada annotation_mask_path
 7. Introducir el conjunto etiquetado en el espacio latente de StyleGAN2 con el comando 
     ```sh
@@ -30,8 +30,14 @@ Este proyecto utiliza el modelo editGAN de Nvidia para generar parejas de imáge
     ```
     Esto hace que el programa solo pueda usar MemoryMax de la ram, obligando al sistema a utilizar el espacio swap para el resto que necesite el entrenamiento.
         
-10. Utilizar el script get_image_from_mask.py para generar parejas imagen-máscara o para generar una segmentación de imágenes reales de entrada.
+10. Utilizar el script ../dataset_gen.py para generar parejas imagen-máscara o para generar una segmentación de imágenes reales de entrada.
 
+11. Entrenar el support vector machine con svm_trainer.py
+
+12. Aplicar el filtro con image_filter.py
+
+
+Se ha incluido un notebook de jupyter llamado full_system.ipynb donde se realiza todo el proceso paso a paso.
 
 ## Utils adicionales
 Dos scripts adicionales fueron utilizados durante el proyecto:

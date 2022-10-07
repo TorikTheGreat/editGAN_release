@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug 25 12:33:50 2022
-
-@author: marco
+Un simple script para elegir un subconjunto de imágenes de prueba. 
 """
 
 import argparse
-import numpy as np
-from PIL import Image
 from os import walk
-import os
 from random import sample
 import shutil
 
