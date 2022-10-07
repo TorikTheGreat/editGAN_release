@@ -42,8 +42,6 @@ Se ha incluido un notebook de jupyter llamado full_system.ipynb donde se realiza
 ## Utils adicionales
 Dos scripts adicionales fueron utilizados durante el proyecto:
 
-- power_logger.py:
-    Un script muy básico para comunicar con una UPC de marca APC para generar un log de la potencia utilizada durante un entrenamiento.
 - mask_gen.py:
     Utilizado para generar máscaras a partir de un file de anotaciones .json en el formato VIA (ver https://github.com/ox-vgg/via)
 - simple_aug.py:
